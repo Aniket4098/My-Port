@@ -5,7 +5,6 @@ const navLinks = document.querySelector("#nav-links");
 const backToTop = document.querySelector(".back-to-top");
 const contactForm = document.querySelector("#contact-form");
 const formStatus = document.querySelector("#form-status");
-const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 function closeMenu() {
   menuToggle.setAttribute("aria-expanded", "false");
@@ -20,7 +19,7 @@ menuToggle.addEventListener("click", () => {
   navLinks.classList.toggle("open", !isExpanded);
 });
 
-navLinks.querySelectorAll('a[href^="#"]').forEach((link) => {
+navLinks.querySelectorAll("a").forEach((link) => {
   link.addEventListener("click", closeMenu);
 });
 
@@ -39,27 +38,10 @@ window.addEventListener("scroll", updateBackToTop, { passive: true });
 updateBackToTop();
 
 backToTop.addEventListener("click", () => {
-  window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+  window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
 });
 
 document.querySelector("#current-year").textContent = String(new Date().getFullYear());
-
-const revealElements = document.querySelectorAll(".reveal");
-
-if ("IntersectionObserver" in window && !reduceMotion) {
-  const revealObserver = new IntersectionObserver((entries, observer) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("is-visible");
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.12 });
-
-  revealElements.forEach((element) => revealObserver.observe(element));
-} else {
-  revealElements.forEach((element) => element.classList.add("is-visible"));
-}
 
 const validationRules = {
   name: {
@@ -112,6 +94,6 @@ contactForm.addEventListener("submit", (event) => {
     return;
   }
 
-  formStatus.textContent = "Your message is valid. This demo does not send it; connect a backend or email service to enable delivery.";
+  formStatus.textContent = "Your message looks good. This demo does not send it—connect a backend or email service to enable delivery.";
   formStatus.classList.add("success");
 });
