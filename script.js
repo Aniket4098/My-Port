@@ -5,7 +5,17 @@ const navLinks = document.querySelector("#nav-links");
 const backToTop = document.querySelector(".back-to-top");
 const contactForm = document.querySelector("#contact-form");
 const formStatus = document.querySelector("#form-status");
+const submitButton = contactForm.querySelector(".form-submit");
+const submitButtonLabel = submitButton.querySelector(".form-submit-label");
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const EMAILJS_PUBLIC_KEY = "hOpIoGCeeiQ5ZwfL5";
+const EMAILJS_SERVICE_ID = "service_opcckwg";
+const EMAILJS_TEMPLATE_ID = "template_j2vzoim";
+
+if (typeof emailjs !== "undefined") {
+  emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+}
 
 function closeMenu() {
   menuToggle.setAttribute("aria-expanded", "false");
@@ -63,18 +73,22 @@ if ("IntersectionObserver" in window && !reduceMotion) {
 
 const validationRules = {
   name: {
+    requiredMessage: "Please enter your full name.",
     message: "Please enter at least 2 characters.",
     validate: (value) => value.trim().length >= 2,
   },
   email: {
+    requiredMessage: "Please enter your email address.",
     message: "Please enter a valid email address.",
     validate: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim()),
   },
   subject: {
+    requiredMessage: "Please enter a subject.",
     message: "Please enter a subject of at least 2 characters.",
     validate: (value) => value.trim().length >= 2,
   },
   message: {
+    requiredMessage: "Please enter a message.",
     message: "Please enter a message of at least 10 characters.",
     validate: (value) => value.trim().length >= 10,
   },
@@ -84,10 +98,11 @@ function validateField(fieldName) {
   const field = contactForm.elements.namedItem(fieldName);
   const errorMessage = document.querySelector(`#${fieldName}-error`);
   const rule = validationRules[fieldName];
-  const isValid = rule.validate(field.value);
+  const value = field.value.trim();
+  const isValid = value.length > 0 && rule.validate(value);
 
   field.setAttribute("aria-invalid", String(!isValid));
-  errorMessage.textContent = isValid ? "" : rule.message;
+  errorMessage.textContent = isValid ? "" : value.length === 0 ? rule.requiredMessage : rule.message;
   return isValid;
 }
 
@@ -99,8 +114,14 @@ Object.keys(validationRules).forEach((fieldName) => {
   });
 });
 
+let isSending = false;
+
 contactForm.addEventListener("submit", (event) => {
   event.preventDefault();
+  if (isSending) {
+    return;
+  }
+
   formStatus.textContent = "";
   formStatus.className = "form-status";
 
@@ -112,6 +133,33 @@ contactForm.addEventListener("submit", (event) => {
     return;
   }
 
-  formStatus.textContent = "Your message is valid. This demo does not send it; connect a backend or email service to enable delivery.";
-  formStatus.classList.add("success");
+  if (typeof emailjs === "undefined") {
+    formStatus.textContent = "The email service could not load. Please try again later or email me directly at aniketlakade4098@gmail.com.";
+    formStatus.classList.add("error");
+    return;
+  }
+
+  isSending = true;
+  submitButton.disabled = true;
+  submitButton.setAttribute("aria-busy", "true");
+  submitButtonLabel.textContent = "Sending...";
+  formStatus.textContent = "Sending your message...";
+
+  Promise.resolve().then(() => emailjs.sendForm(
+    EMAILJS_SERVICE_ID,
+    EMAILJS_TEMPLATE_ID,
+    contactForm,
+  )).then(() => {
+    formStatus.textContent = "Your message was sent successfully. Thank you for getting in touch!";
+    formStatus.classList.add("success");
+  }).catch((error) => {
+    console.error("EmailJS contact form submission failed:", error);
+    formStatus.textContent = "We couldn't send your message. Please try again shortly or email me directly at aniketlakade4098@gmail.com.";
+    formStatus.classList.add("error");
+  }).finally(() => {
+    isSending = false;
+    submitButton.disabled = false;
+    submitButton.removeAttribute("aria-busy");
+    submitButtonLabel.textContent = "Send Message";
+  });
 });

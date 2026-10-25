@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
   <script src="script.js" defer></script>
 </head>
 <body>
@@ -214,9 +215,9 @@
             </div>
             <div class="form-field"><label for="subject">Subject</label><input id="subject" name="subject" type="text" placeholder="What would you like to discuss?" required minlength="2" aria-describedby="subject-error"><span class="field-error" id="subject-error"></span></div>
             <div class="form-field"><label for="message">Message</label><textarea id="message" name="message" rows="4" placeholder="Write your message here..." required minlength="10" aria-describedby="message-error"></textarea><span class="field-error" id="message-error"></span></div>
-            <button class="button button-primary form-submit" type="submit">Validate message <span aria-hidden="true">↗</span></button>
+            <button class="button button-primary form-submit" type="submit"><span class="form-submit-label">Send Message</span> <span aria-hidden="true">↗</span></button>
             <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
-            <p class="form-disclaimer">This form checks your message in the browser but does not send or store it. Real email delivery requires a backend or email service.</p>
+            <p class="form-disclaimer">Messages are sent through EmailJS. You can also reach me directly at <a href="mailto:aniketlakade4098@gmail.com">aniketlakade4098@gmail.com</a>.</p>
           </form>
         </div>
       </div>

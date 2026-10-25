@@ -214,6 +214,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); }
 .field-error { display: block; min-height: 0; margin-top: 3px; color: #ff9ca0; font-size: 9px; }
 .field-error:not(:empty) { min-height: 13px; }
 .form-submit { width: 100%; min-height: 42px; }
+.form-submit:disabled { cursor: wait; opacity: .7; }
 .form-status { min-height: 0; margin: 0; font-size: 10px; }
 .form-status:not(:empty) { margin-top: 10px; }
 .form-status.success { color: #91e7b7; }
